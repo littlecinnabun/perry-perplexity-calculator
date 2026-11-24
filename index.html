@@ -567,60 +567,38 @@
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Floating Emotes / Thought Bubbles on Perry's Head */
+    /* Floating Emotes / Thought Bubbles */
     .thought-bubble {
       position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ffffff;
-      border: 2px solid var(--perry-teal);
-      border-radius: 18px;
-      padding: 7px 16px;
-      font-size: 0.84rem;
+      top: -10px;
+      right: 10px;
+      background: white;
+      border: 1.5px solid var(--perry-teal);
+      border-radius: 14px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
       font-weight: 700;
       color: var(--perry-teal-dark);
-      box-shadow: 0 8px 22px rgba(0, 100, 105, 0.14);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 7px;
-      white-space: nowrap;
+      gap: 5px;
+      transform-origin: bottom left;
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 10;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .thought-bubble::after {
       content: '';
       position: absolute;
-      bottom: -6px;
-      left: 50%;
-      margin-left: -5px;
+      bottom: -7px;
+      left: 14px;
       width: 10px;
       height: 10px;
-      background: #ffffff;
-      border-right: 2px solid var(--perry-teal);
-      border-bottom: 2px solid var(--perry-teal);
+      background: white;
+      border-right: 1.5px solid var(--perry-teal);
+      border-bottom: 1.5px solid var(--perry-teal);
       transform: rotate(45deg);
-    }
-
-    .thought-bubble.is-thinking {
-      background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
-      border-color: var(--perry-bill);
-      color: var(--perry-bill-dark);
-      box-shadow: 0 8px 24px rgba(249, 129, 42, 0.26);
-      animation: thinkingBounce 0.75s ease-in-out infinite alternate;
-    }
-
-    .thought-bubble.is-thinking::after {
-      background: #fffaf3;
-      border-right-color: var(--perry-bill);
-      border-bottom-color: var(--perry-bill);
-    }
-
-    @keyframes thinkingBounce {
-      0% { transform: translateX(-50%) translateY(0) scale(1); }
-      100% { transform: translateX(-50%) translateY(-5px) scale(1.04); }
     }
 
     @keyframes popIn {
@@ -1126,10 +1104,10 @@
             Special Agent P
           </div>
 
-          <!-- Emote Thought Cloud on Perry's Head -->
-          <div id="thoughtBubble" class="thought-bubble">
-            <span id="thoughtIcon">👋</span>
-            <span id="thoughtText">Hello, I'm Perry the Platypus</span>
+          <!-- Emote Thought Cloud -->
+          <div id="thoughtBubble" class="thought-bubble" style="display: none;">
+            <span id="thoughtIcon">💡</span>
+            <span id="thoughtText">Calculating...</span>
           </div>
 
           <!-- Perry SVG Character Canvas -->
@@ -1222,7 +1200,7 @@
 
           <!-- Dialog Speech Box -->
           <div id="perrySpeech" class="perry-speech">
-            "Hello, I'm Perry the Platypus!"
+            "Krrrr-k-k-k-k! Adjust word probabilities to measure how surprised I am!"
           </div>
 
           <!-- Interactive Action Buttons -->
@@ -1250,9 +1228,8 @@
     const state = {
       tokens: [],
       probabilities: [], // parallel array of numbers (0 < p <= 1)
-      perryState: 'idle', // 'idle' | 'thinking'
-      typingTimeout: null,
-      idleTimeout: null
+      perryState: 'idle', // 'idle' | 'thinking' | 'calculating' | 'confident' | 'confused'
+      typingTimeout: null
     };
 
     // DOM Elements
@@ -1281,43 +1258,66 @@
     const btnSetLow = document.getElementById('btnSetLow');
     const btnNormalize = document.getElementById('btnNormalize');
 
+
+
     /* =========================================================================
        PERRY EMOTE / ANIMATION STATE CONTROLLER
-       - The thinking cloud appears ONLY when the user is changing probabilities
-       - Otherwise, it always shows "Hello, I'm Perry the Platypus"
        ========================================================================= */
-    function resetToIdleGreeting() {
-      state.perryState = 'idle';
-      thoughtBubble.style.display = 'flex';
-      thoughtBubble.classList.remove('is-thinking');
-      thoughtIcon.textContent = '👋';
-      thoughtText.textContent = "Hello, I'm Perry the Platypus";
+    function setPerryState(newState, customSpeech = null) {
+      state.perryState = newState;
+
+      // Reset classes
       perrySvg.classList.remove('perry-thinking', 'perry-calculating');
       if (magnifyingGlass) magnifyingGlass.style.display = 'none';
-      perrySpeech.textContent = '"Hello, I\'m Perry the Platypus!"';
+
+      switch (newState) {
+        case 'thinking':
+          perrySvg.classList.add('perry-thinking');
+          thoughtBubble.style.display = 'flex';
+          thoughtIcon.textContent = '🤔';
+          thoughtText.textContent = 'Analyzing...';
+          perrySpeech.textContent = customSpeech || '"Hmm... Agent P is evaluating word predictability..."';
+          break;
+
+        case 'calculating':
+          perrySvg.classList.add('perry-calculating');
+          if (magnifyingGlass) magnifyingGlass.style.display = 'block';
+          thoughtBubble.style.display = 'flex';
+          thoughtIcon.textContent = '⚙️';
+          thoughtText.textContent = 'Computing PPL';
+          perrySpeech.textContent = customSpeech || '"Crunching log probabilities under O.W.C.A. protocol!"';
+          break;
+
+        case 'confident': // Low perplexity
+          perrySvg.classList.add('perry-thinking');
+          thoughtBubble.style.display = 'flex';
+          thoughtIcon.textContent = '⭐';
+          thoughtText.textContent = 'Predictable!';
+          perrySpeech.textContent = customSpeech || '"A-gent P! Low perplexity! Dr. Doofenshmirtz could never surprise us with this text!"';
+          break;
+
+        case 'confused': // High perplexity
+          perrySvg.classList.add('perry-calculating');
+          thoughtBubble.style.display = 'flex';
+          thoughtIcon.textContent = '❓';
+          thoughtText.textContent = 'High Perplexity!';
+          perrySpeech.textContent = customSpeech || '"Grrrrrrr?! Very high perplexity! Even Major Monogram is baffled by these probabilities!"';
+          break;
+
+        case 'idle':
+        default:
+          thoughtBubble.style.display = 'none';
+          perrySpeech.textContent = customSpeech || '"Krrrr-k-k-k-k! Adjust word probabilities to measure how surprised I am!"';
+          break;
+      }
     }
 
     function triggerThinkingEmote() {
-      // Show thinking cloud on Perry's head strictly while changing probabilities
-      thoughtBubble.style.display = 'flex';
-      thoughtBubble.classList.add('is-thinking');
-      thoughtIcon.textContent = '🤔';
-      thoughtText.textContent = 'Thinking...';
-      perrySvg.classList.add('perry-thinking');
-      perrySpeech.textContent = '"Perry is thinking as you adjust the probabilities..."';
-
+      setPerryState('thinking', '"Hmm... Perry is observing your probability adjustment..."');
       clearTimeout(state.typingTimeout);
-      clearTimeout(state.idleTimeout);
-
-      // Re-evaluate perplexity live
       state.typingTimeout = setTimeout(() => {
         evaluatePerplexity();
-      }, 250);
-
-      // Once the user stops changing probabilities, return to "Hello, I'm Perry the Platypus"
-      state.idleTimeout = setTimeout(() => {
-        resetToIdleGreeting();
-      }, 1200);
+      }, 700);
     }
 
     /* =========================================================================
@@ -1549,7 +1549,7 @@
         statLoss.textContent = '--';
         statJointProb.textContent = '--';
         calcTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">Enter a sentence to generate calculations.</td></tr>`;
-        resetToIdleGreeting();
+        setPerryState('idle');
         return;
       }
 
@@ -1642,18 +1642,22 @@
         interpIcon.textContent = '🕵️‍♂️';
         interpTitle.textContent = 'Extremely Predictable (Agent P Approved!)';
         interpText.textContent = `PPL = ${ppl.toFixed(2)}. At each token, the model acts as though it is choosing between approximately ${Math.max(1, Math.round(ppl))} equally probable word. The model is extraordinarily confident!`;
+        setPerryState('confident', '"A-gent P! Perplexity is under 2.0! This sentence is as predictable as Doofenshmirtz losing to me!"');
       } else if (ppl < 6.0) {
         interpIcon.textContent = '💡';
         interpTitle.textContent = 'Moderate Natural Language Perplexity';
         interpText.textContent = `PPL = ${ppl.toFixed(2)}. This represents typical fluency in common natural sentences. The model considers roughly ~${Math.round(ppl)} plausible alternative choices on average per word.`;
+        setPerryState('thinking', '"Hmm! Perplexity of ' + ppl.toFixed(1) + '. Balanced surprise—Perry detects normal conversational flow."');
       } else if (ppl < 25.0) {
         interpIcon.textContent = '⚡';
         interpTitle.textContent = 'High Surprise / Novel Vocabulary';
         interpText.textContent = `PPL = ${ppl.toFixed(2)}. Several words had low assigned probabilities. The language model feels high uncertainty at each position (branching factor of ~${Math.round(ppl)}).`;
+        setPerryState('calculating', '"Krrrr! Elevated perplexity detected! Are Doofenshmirtz\'s robots generating random jargon?!"');
       } else {
         interpIcon.textContent = '😵‍💫';
         interpTitle.textContent = 'Massive Bewilderment (Extreme Perplexity!)';
         interpText.textContent = `PPL = ${ppl > 9999 ? ppl.toExponential(2) : ppl.toFixed(1)}. The model was severely shocked by this sequence of tokens. This happens with rare tokens, misspellings, or highly improbable probability assignments.`;
+        setPerryState('confused', '"Grrrrrr-k-k-k! Extreme Perplexity! Perry\'s fedora is spinning with confusion over these probabilities!"');
       }
     }
 
@@ -1675,17 +1679,19 @@
        GLOBAL CONTROLS & TOOLBAR EVENT LISTENERS
        ========================================================================= */
 
-    // Sentence input typing triggers token updates & thinking emote
+    // Sentence input typing
     sentenceInput.addEventListener('input', () => {
-      triggerThinkingEmote();
-      syncSentenceToTokens(true);
+      setPerryState('thinking', '"Perry senses new tokens being typed into the terminal..."');
+      clearTimeout(state.typingTimeout);
+      state.typingTimeout = setTimeout(() => {
+        syncSentenceToTokens(true);
+      }, 500);
     });
 
     // Preset sentence pills
     document.querySelectorAll('.preset-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         sentenceInput.value = pill.dataset.text;
-        triggerThinkingEmote();
         syncSentenceToTokens(false);
       });
     });
@@ -1694,32 +1700,34 @@
     btnRandomizeAll.addEventListener('click', () => {
       state.probabilities = state.tokens.map(() => getRandomProbability());
       renderWordCards();
-      triggerThinkingEmote();
+      evaluatePerplexity();
+      setPerryState('calculating', '"Rolling the O.W.C.A. polyhedral dice! Brand new random probabilities assigned!"');
     });
 
     // Preset High
     btnSetHigh.addEventListener('click', () => {
       state.probabilities = state.tokens.map(() => 0.85);
       renderWordCards();
-      triggerThinkingEmote();
+      evaluatePerplexity();
     });
 
     // Preset Medium
     btnSetMedium.addEventListener('click', () => {
       state.probabilities = state.tokens.map(() => 0.50);
       renderWordCards();
-      triggerThinkingEmote();
+      evaluatePerplexity();
     });
 
     // Preset Low
     btnSetLow.addEventListener('click', () => {
       state.probabilities = state.tokens.map(() => 0.15);
       renderWordCards();
-      triggerThinkingEmote();
+      evaluatePerplexity();
     });
 
     // Normalize / Smooth curve
     btnNormalize.addEventListener('click', () => {
+      // Smooth out probabilities into a realistic distribution curve
       const total = state.probabilities.reduce((acc, v) => acc + v, 0);
       if (total > 0) {
         state.probabilities = state.probabilities.map(p => {
@@ -1727,39 +1735,31 @@
           return parseFloat(Math.min(0.99, smoothed).toFixed(3));
         });
         renderWordCards();
-        triggerThinkingEmote();
+        evaluatePerplexity();
       }
     });
 
     // Tip Fedora button
     btnTipFedora.addEventListener('click', () => {
-      perrySpeech.textContent = '"*Perry tips his brown fedora coolly at you.*"';
-      perrySvg.classList.add('perry-thinking');
-      clearTimeout(state.idleTimeout);
-      state.idleTimeout = setTimeout(() => {
-        resetToIdleGreeting();
-      }, 1500);
+      setPerryState('confident', '"*Perry tips his brown fedora coolly at you.*"');
     });
 
     // Agent P Action button
     btnAgentPAction.addEventListener('click', () => {
-      triggerThinkingEmote();
+      setPerryState('calculating', '"Agent P has activated secret scanner glasses to inspect your word probabilities!"');
+      setTimeout(() => {
+        evaluatePerplexity();
+      }, 1200);
     });
 
-    // Click on Perry SVG
+    // Click on Perry SVG directly triggers salute/emote
     perrySvg.addEventListener('click', () => {
-      perrySpeech.textContent = '"*Perry tips his brown fedora coolly at you.*"';
-      perrySvg.classList.add('perry-thinking');
-      clearTimeout(state.idleTimeout);
-      state.idleTimeout = setTimeout(() => {
-        resetToIdleGreeting();
-      }, 1500);
+      setPerryState('confident', '"*Perry tips his brown fedora coolly at you.*"');
     });
 
     // Initialize application on load
     window.addEventListener('DOMContentLoaded', () => {
       syncSentenceToTokens(false);
-      resetToIdleGreeting();
     });
   </script>
 </body>
