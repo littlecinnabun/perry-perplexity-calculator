@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent P's Perplexity Calculator | Phineas & Ferb Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --perry-teal: #00A3A6;
+      --perry-teal-dark: #007A7C;
+      --perry-teal-light: #5CE1E6;
+      --perry-bill: #F9812A;
+      --perry-bill-dark: #D46211;
+      --fedora-brown: #5D3A1A;
+      --fedora-band: #1E1E1E;
+      --bg-gradient-1: #E0F7FA;
+      --bg-gradient-2: #FFF8E1;
+      --bg-gradient-3: #E8F5E9;
+      --glass-bg: rgba(255, 255, 255, 0.68);
+      --glass-bg-hover: rgba(255, 255, 255, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.85);
+      --glass-shadow: 0 10px 30px rgba(0, 163, 166, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+      --glass-card-shadow: 0 16px 40px rgba(0, 100, 105, 0.1), 0 6px 16px rgba(0, 0, 0, 0.05);
+      --text-main: #1C3038;
+      --text-muted: #59737D;
+      --accent-green: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #F43F5E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      color: var(--text-main);
+      background: linear-gradient(135deg, #e3f8fa 0%, #fff9e6 50%, #ebfaf0 100%);
+      background-attachment: fixed;
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    /* Ambient animated background orbs */
+    .bg-orbs {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 450px;
+      height: 450px;
+      background: rgba(0, 163, 166, 0.25);
+      top: -100px;
+      left: -80px;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: rgba(249, 129, 42, 0.2);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 350px;
+      height: 350px;
+      background: rgba(16, 185, 129, 0.18);
+      top: 40%;
+      left: 60%;
+      animation-delay: -9s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(40px, 30px) scale(1.08); }
+      100% { transform: translate(-30px, 50px) scale(0.95); }
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* Glass Header */
+    header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px 32px;
+      box-shadow: var(--glass-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      transition: all 0.3s ease;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--perry-teal), var(--perry-teal-dark));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0, 163, 166, 0.3);
+      position: relative;
+    }
+
+    .brand-icon svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .brand-title h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: rgba(249, 129, 42, 0.15);
+      color: var(--perry-bill-dark);
+      border: 1px solid rgba(249, 129, 42, 0.35);
+      letter-spacing: 0.05em;
+    }
+
+    .brand-title p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+
+
+    /* Grid Layout: Main Workspace + Perry Agent Dock */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--glass-card-shadow);
+      margin-bottom: 24px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .glass-card:hover {
+      box-shadow: 0 20px 48px rgba(0, 100, 105, 0.12), 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(0, 163, 166, 0.12);
+      color: var(--perry-teal);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Sentence Input Styling */
+    .input-wrapper {
+      position: relative;
+    }
+
+    textarea.sentence-input {
+      width: 100%;
+      height: 96px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(0, 163, 166, 0.25);
+      background: rgba(255, 255, 255, 0.85);
+      font-family: inherit;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: var(--text-main);
+      resize: vertical;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    textarea.sentence-input:focus {
+      outline: none;
+      border-color: var(--perry-teal);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(0, 163, 166, 0.15);
+    }
+
+    .presets-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .presets-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .preset-pill {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 163, 166, 0.2);
+      color: var(--text-main);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-pill:hover {
+      background: var(--perry-teal);
+      color: white;
+      border-color: var(--perry-teal);
+      transform: translateY(-1px);
+    }
+
+    /* Word Probabilities Board */
+    .actions-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .toolbar-left, .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-teal {
+      background: linear-gradient(135deg, var(--perry-teal), var(--perry-teal-dark));
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 163, 166, 0.25);
+    }
+
+    .btn-teal:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 163, 166, 0.35);
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, var(--perry-bill), var(--perry-bill-dark));
+      color: white;
+      box-shadow: 0 4px 12px rgba(249, 129, 42, 0.25);
+    }
+
+    .btn-orange:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(249, 129, 42, 0.35);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-main);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-ghost:hover {
+      background: white;
+      border-color: var(--perry-teal);
+      color: var(--perry-teal);
+      transform: translateY(-1px);
+    }
+
+    /* Word Cards Container */
+    .word-cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .word-card {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .word-card:hover, .word-card.active-editing {
+      transform: translateY(-2px);
+      border-color: var(--perry-teal-light);
+      box-shadow: 0 8px 24px rgba(0, 163, 166, 0.15);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .word-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .word-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .word-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 170px;
+    }
+
+    .prob-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prob-input-field {
+      width: 82px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(0, 163, 166, 0.25);
+      background: #ffffff;
+      color: var(--perry-teal-dark);
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .prob-input-field:focus {
+      outline: none;
+      border-color: var(--perry-teal);
+      box-shadow: 0 0 0 3px rgba(0, 163, 166, 0.18);
+    }
+
+    .slider-container {
+      flex: 1;
+    }
+
+    .prob-slider {
+      width: 100%;
+      accent-color: var(--perry-teal);
+      cursor: pointer;
+      height: 6px;
+      border-radius: 4px;
+    }
+
+    .word-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 163, 166, 0.06);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .word-meta span {
+      display: flex;
+      gap: 4px;
+    }
+
+    .quick-prob-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .quick-btn {
+      flex: 1;
+      padding: 2px 0;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .quick-btn:hover {
+      background: var(--perry-teal);
+      color: white;
+      border-color: var(--perry-teal);
+    }
+
+    /* Perry The Platypus Agent Card */
+    .perry-dock {
+      position: sticky;
+      top: 24px;
+    }
+
+    .perry-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: var(--glass-card-shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .perry-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, var(--perry-teal), var(--perry-bill));
+    }
+
+    .agent-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 163, 166, 0.12);
+      border: 1px solid rgba(0, 163, 166, 0.3);
+      color: var(--perry-teal-dark);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    /* Perry Avatar Canvas / SVG Stage */
+    .perry-stage {
+      width: 220px;
+      height: 220px;
+      margin: 0 auto 12px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .perry-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 10px 14px rgba(0, 100, 105, 0.15));
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Floating Emotes / Thought Bubbles on Perry's Head */
+    .thought-bubble {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      border: 2px solid var(--perry-teal);
+      border-radius: 18px;
+      padding: 7px 16px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--perry-teal-dark);
+      box-shadow: 0 8px 22px rgba(0, 100, 105, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      white-space: nowrap;
+      z-index: 10;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .thought-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      margin-left: -5px;
+      width: 10px;
+      height: 10px;
+      background: #ffffff;
+      border-right: 2px solid var(--perry-teal);
+      border-bottom: 2px solid var(--perry-teal);
+      transform: rotate(45deg);
+    }
+
+    .thought-bubble.is-thinking {
+      background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+      border-color: var(--perry-bill);
+      color: var(--perry-bill-dark);
+      box-shadow: 0 8px 24px rgba(249, 129, 42, 0.26);
+      animation: thinkingBounce 0.75s ease-in-out infinite alternate;
+    }
+
+    .thought-bubble.is-thinking::after {
+      background: #fffaf3;
+      border-right-color: var(--perry-bill);
+      border-bottom-color: var(--perry-bill);
+    }
+
+    @keyframes thinkingBounce {
+      0% { transform: translateX(-50%) translateY(0) scale(1); }
+      100% { transform: translateX(-50%) translateY(-5px) scale(1.04); }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.4) translateY(10px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .perry-speech {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 163, 166, 0.2);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      font-style: italic;
+      margin-bottom: 16px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .perry-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .chatter-btn {
+      background: rgba(249, 129, 42, 0.12);
+      border: 1px solid rgba(249, 129, 42, 0.35);
+      color: var(--perry-bill-dark);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .chatter-btn:hover {
+      background: var(--perry-bill);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* Calculation Formula & Results Section */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 700px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--perry-teal-dark);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .stat-card.highlight {
+      background: linear-gradient(135deg, rgba(0, 163, 166, 0.12), rgba(92, 225, 230, 0.08));
+      border: 1.5px solid var(--perry-teal);
+    }
+
+    .stat-card.highlight .stat-value {
+      color: var(--perry-teal-dark);
+      font-size: 2.2rem;
+    }
+
+    /* Mathematical Formula Box */
+    .formula-box {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0, 163, 166, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .formula-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--perry-teal-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .formula-math {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      background: #ffffff;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+    }
+
+    .math-symbol {
+      color: var(--perry-teal);
+      font-weight: 700;
+    }
+
+    .formula-steps {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .formula-steps ol {
+      padding-left: 20px;
+    }
+
+    .formula-steps li {
+      margin-bottom: 6px;
+    }
+
+    .formula-steps strong {
+      color: var(--text-main);
+    }
+
+    /* Calculation Table */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      background: rgba(255, 255, 255, 0.8);
+      margin-top: 14px;
+    }
+
+    table.calc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    table.calc-table th {
+      background: rgba(0, 163, 166, 0.08);
+      padding: 12px 14px;
+      font-weight: 700;
+      color: var(--perry-teal-dark);
+      border-bottom: 1px solid rgba(0, 163, 166, 0.15);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    table.calc-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+    }
+
+    table.calc-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.calc-table tr:hover td {
+      background: rgba(0, 163, 166, 0.04);
+    }
+
+    /* Interpretation Callout */
+    .interpretation-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px solid rgba(0, 163, 166, 0.25);
+      margin-top: 18px;
+    }
+
+    .interp-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .interp-content h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .interp-content p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Animations for Perry SVG */
+    @keyframes perryWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-3deg); }
+      75% { transform: rotate(3deg); }
+    }
+
+    @keyframes perryThink {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    @keyframes fedoraTip {
+      0%, 100% { transform: rotate(0deg); }
+      40% { transform: rotate(-8deg) translateY(-2px); }
+    }
+
+    @keyframes eyeScan {
+      0%, 100% { transform: translateX(0); }
+      30% { transform: translateX(-3px); }
+      70% { transform: translateX(3px); }
+    }
+
+    .perry-thinking {
+      animation: perryThink 1.8s ease-in-out infinite;
+    }
+
+    .perry-thinking #perry-fedora {
+      animation: fedoraTip 2.5s ease-in-out infinite;
+      transform-origin: 75px 40px;
+    }
+
+    .perry-thinking .pupil {
+      animation: eyeScan 2s ease-in-out infinite;
+    }
+
+    .perry-calculating {
+      animation: perryWiggle 0.6s ease-in-out infinite;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient background glow orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-icon">
+          <!-- Mini Fedora Icon -->
+          <svg viewBox="0 0 40 40" fill="none">
+            <!-- Fedora Hat -->
+            <ellipse cx="20" cy="27" rx="16" ry="4" fill="#5D3A1A"/>
+            <path d="M10 26 C10 18, 14 13, 20 13 C26 13, 30 18, 30 26 Z" fill="#5D3A1A"/>
+            <path d="M10 24 H30 V26 H10 Z" fill="#1E1E1E"/>
+            <path d="M16 13 Q20 16 24 13" stroke="#422810" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <h1>
+            Agent P's Perplexity Calculator
+            <span class="brand-badge">O.W.C.A. Lab</span>
+          </h1>
+          <p>Measure language model surprise with Perry the Platypus and interactive probability tuning</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="dashboard-layout">
+      <!-- Left Column: Inputs & Tables -->
+      <div class="main-content">
+        <!-- Input Section -->
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="title-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+              </div>
+              <span>1. Enter Sentence to Evaluate</span>
+            </div>
+            <span style="font-size:0.8rem; color:var(--text-muted); font-weight:500;">Live tokenization</span>
+          </div>
+
+          <div class="input-wrapper">
+            <textarea id="sentenceInput" class="sentence-input" placeholder="Type or paste any sentence here to inspect its perplexity...">Curse you Perry the Platypus!</textarea>
+          </div>
+
+          <!-- Presets -->
+          <div class="presets-bar">
+            <span class="presets-label">Agent P Presets:</span>
+            <button class="preset-pill" data-text="Curse you Perry the Platypus!">Curse you Perry the Platypus!</button>
+            <button class="preset-pill" data-text="A platypus? PERRY the platypus?!">A platypus? PERRY the platypus?!</button>
+            <button class="preset-pill" data-text="Hey Ferb I know what we are gonna do today">Hey Ferb I know what we are gonna do today</button>
+            <button class="preset-pill" data-text="The quick brown fox jumps over the lazy dog">Quick Brown Fox</button>
+          </div>
+        </div>
+
+        <!-- Token Probabilities Section -->
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="title-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M8 12h8"></path>
+                  <path d="M12 8v8"></path>
+                </svg>
+              </div>
+              <span>2. Individual Word Probabilities \(P(w_i)\)</span>
+            </div>
+            <span id="wordCountBadge" style="font-size:0.82rem; font-weight:700; color:var(--perry-teal-dark); background:rgba(0,163,166,0.12); padding:3px 10px; border-radius:100px;">5 Tokens</span>
+          </div>
+
+          <!-- Actions toolbar -->
+          <div class="actions-toolbar">
+            <div class="toolbar-left">
+              <button id="btnRandomizeAll" class="btn btn-teal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                Randomize All Probabilities
+              </button>
+              <button id="btnSetHigh" class="btn btn-ghost" title="High confidence (predictable text)">High (0.85)</button>
+              <button id="btnSetMedium" class="btn btn-ghost" title="Balanced probabilities">Med (0.50)</button>
+              <button id="btnSetLow" class="btn btn-ghost" title="Low probabilities (high perplexity)">Low (0.15)</button>
+            </div>
+            <div class="toolbar-right">
+              <button id="btnNormalize" class="btn btn-ghost" title="Normalize values so their maximum is bounded">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Smooth Curve
+              </button>
+            </div>
+          </div>
+
+          <!-- Word Cards Grid -->
+          <div id="wordCardsContainer" class="word-cards-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Perplexity Calculation & Mathematical Breakdown -->
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="title-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="16" y1="14" x2="16" y2="14.01"></line>
+                  <line x1="12" y1="14" x2="12" y2="14.01"></line>
+                  <line x1="8" y1="14" x2="8" y2="14.01"></line>
+                  <line x1="16" y1="18" x2="16" y2="18.01"></line>
+                  <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                  <line x1="8" y1="18" x2="8" y2="18.01"></line>
+                </svg>
+              </div>
+              <span>3. Formula & Calculation Results</span>
+            </div>
+            <span style="font-size:0.82rem; color:var(--text-muted); font-family:'JetBrains Mono', monospace;">PPL = exp(-1/N * Σ ln P(w))</span>
+          </div>
+
+          <!-- Metric Cards -->
+          <div class="results-grid">
+            <div class="stat-card highlight">
+              <div class="stat-label">Perplexity (PPL)</div>
+              <div id="statPerplexity" class="stat-value">--</div>
+              <div id="statPerplexityDesc" class="stat-sub">Lower is more predictable</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Cross-Entropy Loss (H)</div>
+              <div id="statLoss" class="stat-value">--</div>
+              <div class="stat-sub">\(-\frac{1}{N} \sum \ln P(w_i)\)</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Joint Sequence Probability</div>
+              <div id="statJointProb" class="stat-value">--</div>
+              <div class="stat-sub">\(\prod_{i=1}^N P(w_i)\)</div>
+            </div>
+          </div>
+
+          <!-- Mathematical Formula Box -->
+          <div class="formula-box">
+            <div class="formula-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>The Formal Perplexity Equation</span>
+            </div>
+            <div class="formula-math">
+              <span>PPL(W)</span>
+              <span class="math-symbol">=</span>
+              <span>P(w₁, w₂, ..., w_N)<sup>-1/N</sup></span>
+              <span class="math-symbol">=</span>
+              <span>exp( - 1/N · Σ ln P(wᵢ) )</span>
+            </div>
+
+            <div class="formula-steps">
+              <ol>
+                <li><strong>Tokenization:</strong> The sentence is split into \(N\) individual words.</li>
+                <li><strong>Negative Log-Likelihood (Surprisal):</strong> For each word \(w_i\), we compute \(-\ln P(w_i)\). Rare words yield high surprisal!</li>
+                <li><strong>Average Cross-Entropy:</strong> Average the log surprisal over all \(N\) tokens: \(H = -\frac{1}{N}\sum_{i=1}^N \ln P(w_i)\).</li>
+                <li><strong>Exponentiation:</strong> Final Perplexity is \(\text{PPL} = e^H\). It represents the effective branching factor—how many words the model is equally uncertain between.</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- Detailed Step-by-Step Table -->
+          <div class="table-container">
+            <table class="calc-table">
+              <thead>
+                <tr>
+                  <th style="width: 45px;">#</th>
+                  <th>Word \(w_i\)</th>
+                  <th>Assigned \(P(w_i)\)</th>
+                  <th>Surprisal \(-\ln P(w_i)\)</th>
+                  <th>Bits \(-\log_2 P(w_i)\)</th>
+                  <th>Surprise Rating</th>
+                </tr>
+              </thead>
+              <tbody id="calcTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Plain-Language Interpretation -->
+          <div class="interpretation-banner">
+            <div id="interpIcon" class="interp-icon">🧐</div>
+            <div class="interp-content">
+              <h4 id="interpTitle">Evaluating Model Confidence...</h4>
+              <p id="interpText">Agent P is actively reviewing the word probabilities to determine the degree of bewilderment.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Perry The Platypus Agent Dock -->
+      <div class="perry-dock">
+        <div class="perry-card">
+          <div class="agent-badge-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Special Agent P
+          </div>
+
+          <!-- Emote Thought Cloud on Perry's Head -->
+          <div id="thoughtBubble" class="thought-bubble">
+            <span id="thoughtIcon">👋</span>
+            <span id="thoughtText">Hello, I'm Perry the Platypus</span>
+          </div>
+
+          <!-- Perry SVG Character Canvas -->
+          <div class="perry-stage">
+            <svg id="perrySvg" class="perry-svg perry-thinking" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Shadow -->
+              <ellipse cx="100" cy="184" rx="65" ry="10" fill="rgba(0, 100, 105, 0.15)"/>
+
+              <!-- Beaver Tail (Textured waffle grid) -->
+              <g id="perry-tail">
+                <path d="M40 148 C15 140, 5 160, 22 172 C35 180, 55 170, 60 156 Z" fill="#D46211" stroke="#AA4803" stroke-width="2"/>
+                <!-- Waffle crosshatch -->
+                <line x1="24" y1="152" x2="48" y2="170" stroke="#AA4803" stroke-width="1.5"/>
+                <line x1="16" y1="164" x2="40" y2="178" stroke="#AA4803" stroke-width="1.5"/>
+                <line x1="38" y1="146" x2="16" y2="168" stroke="#AA4803" stroke-width="1.5"/>
+                <line x1="50" y1="156" x2="32" y2="176" stroke="#AA4803" stroke-width="1.5"/>
+              </g>
+
+              <!-- Webbed Feet -->
+              <path d="M68 178 C60 178, 56 186, 75 186 C85 186, 92 182, 85 178 Z" fill="#F9812A" stroke="#D46211" stroke-width="2"/>
+              <path d="M125 178 C118 178, 115 186, 134 186 C144 186, 150 182, 142 178 Z" fill="#F9812A" stroke="#D46211" stroke-width="2"/>
+
+              <!-- Perry's Rectangular Body (Iconic Teal) -->
+              <g id="perry-body">
+                <rect x="62" y="66" width="76" height="110" rx="20" fill="#00A3A6"/>
+                <!-- Subtle shading on side -->
+                <path d="M62 86 C62 75, 71 66, 82 66 L82 176 C71 176, 62 167, 62 156 Z" fill="#008C8F" opacity="0.3"/>
+              </g>
+
+              <!-- Perry's Arms -->
+              <g id="perry-arms">
+                <!-- Left Arm -->
+                <path id="left-arm" d="M62 110 C50 114, 48 132, 60 136 C64 130, 64 118, 62 110 Z" fill="#008C8F"/>
+                <!-- Right Arm (Thinking pose touching chin/bill) -->
+                <path id="right-arm" d="M138 112 C152 118, 154 138, 136 142 C132 136, 134 122, 138 112 Z" fill="#008C8F"/>
+              </g>
+
+              <!-- Perry's Duck Bill (Orange) -->
+              <g id="perry-bill">
+                <path d="M68 108 C68 96, 132 96, 132 108 C134 124, 66 124, 68 108 Z" fill="#F9812A" stroke="#D46211" stroke-width="2.5"/>
+                <!-- Bill ridge -->
+                <path d="M84 104 C94 102, 106 102, 116 104" stroke="#D46211" stroke-width="2" stroke-linecap="round"/>
+                <!-- Nostrils -->
+                <circle cx="94" cy="107" r="1.5" fill="#8C3A00"/>
+                <circle cx="106" cy="107" r="1.5" fill="#8C3A00"/>
+              </g>
+
+              <!-- Perry's Eyes -->
+              <g id="perry-eyes">
+                <!-- Left Eye -->
+                <ellipse cx="82" cy="88" rx="14" ry="14" fill="#FFFFFF" stroke="#007A7C" stroke-width="2"/>
+                <!-- Right Eye -->
+                <ellipse cx="118" cy="88" rx="14" ry="14" fill="#FFFFFF" stroke="#007A7C" stroke-width="2"/>
+
+                <!-- Pupils (Animated) -->
+                <g id="perry-pupils">
+                  <circle class="pupil" cx="84" cy="88" r="5" fill="#4B2810"/>
+                  <circle cx="82.5" cy="86" r="1.5" fill="#FFFFFF"/>
+
+                  <circle class="pupil" cx="116" cy="88" r="5" fill="#4B2810"/>
+                  <circle cx="114.5" cy="86" r="1.5" fill="#FFFFFF"/>
+                </g>
+
+                <!-- Thinking Eyebrows / Eyelids -->
+                <path id="left-eyelid" d="M68 80 Q82 85 96 82" stroke="#005B5D" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path id="right-eyelid" d="M104 82 Q118 85 132 80" stroke="#005B5D" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              </g>
+
+              <!-- Perry's Iconic Fedora Hat (Agent P) -->
+              <g id="perry-fedora">
+                <!-- Hat Brim -->
+                <ellipse cx="100" cy="62" rx="46" ry="10" fill="#5D3A1A" stroke="#3D240E" stroke-width="2"/>
+                <!-- Hat Crown -->
+                <path d="M72 59 C72 38, 80 26, 100 26 C120 26, 128 38, 128 59 Z" fill="#5D3A1A" stroke="#3D240E" stroke-width="2"/>
+                <!-- Hat Indent/Crease -->
+                <path d="M88 28 C96 34, 104 34, 112 28" stroke="#3D240E" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <!-- Black Ribbon Band -->
+                <path d="M72 54 C82 56, 118 56, 128 54 L128 60 C118 62, 82 62, 72 60 Z" fill="#1C1C1C"/>
+              </g>
+
+              <!-- Magnifying Glass for Calculating State (Toggled dynamically) -->
+              <g id="magnifying-glass" style="display:none;">
+                <circle cx="140" cy="98" r="18" fill="rgba(224, 247, 250, 0.45)" stroke="#5D3A1A" stroke-width="3"/>
+                <line x1="152" y1="110" x2="168" y2="126" stroke="#5D3A1A" stroke-width="5" stroke-linecap="round"/>
+                <!-- Lens reflection -->
+                <path d="M130 92 A12 12 0 0 1 144 86" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Dialog Speech Box -->
+          <div id="perrySpeech" class="perry-speech">
+            "Hello, I'm Perry the Platypus!"
+          </div>
+
+          <!-- Interactive Action Buttons -->
+          <div class="perry-actions">
+            <button id="btnTipFedora" class="chatter-btn" title="Agent P tips his fedora">
+              <span>🎩</span>
+              <span>Tip Fedora</span>
+            </button>
+            <button id="btnAgentPAction" class="chatter-btn" style="background:rgba(0,163,166,0.12); border-color:rgba(0,163,166,0.3); color:var(--perry-teal-dark);" title="Trigger Agent P calculation pose">
+              <span>🕵️</span>
+              <span>Inspect Words</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       AGENT P'S PERPLEXITY CALCULATOR APPLICATION LOGIC
+       ========================================================================= */
+
+    // Application State
+    const state = {
+      tokens: [],
+      probabilities: [], // parallel array of numbers (0 < p <= 1)
+      perryState: 'idle', // 'idle' | 'thinking'
+      typingTimeout: null,
+      idleTimeout: null
+    };
+
+    // DOM Elements
+    const sentenceInput = document.getElementById('sentenceInput');
+    const wordCardsContainer = document.getElementById('wordCardsContainer');
+    const wordCountBadge = document.getElementById('wordCountBadge');
+    const statPerplexity = document.getElementById('statPerplexity');
+    const statPerplexityDesc = document.getElementById('statPerplexityDesc');
+    const statLoss = document.getElementById('statLoss');
+    const statJointProb = document.getElementById('statJointProb');
+    const calcTableBody = document.getElementById('calcTableBody');
+    const interpTitle = document.getElementById('interpTitle');
+    const interpText = document.getElementById('interpText');
+    const interpIcon = document.getElementById('interpIcon');
+    const thoughtBubble = document.getElementById('thoughtBubble');
+    const thoughtIcon = document.getElementById('thoughtIcon');
+    const thoughtText = document.getElementById('thoughtText');
+    const perrySpeech = document.getElementById('perrySpeech');
+    const perrySvg = document.getElementById('perrySvg');
+    const magnifyingGlass = document.getElementById('magnifyingGlass') || document.getElementById('magnifying-glass');
+    const btnTipFedora = document.getElementById('btnTipFedora');
+    const btnAgentPAction = document.getElementById('btnAgentPAction');
+    const btnRandomizeAll = document.getElementById('btnRandomizeAll');
+    const btnSetHigh = document.getElementById('btnSetHigh');
+    const btnSetMedium = document.getElementById('btnSetMedium');
+    const btnSetLow = document.getElementById('btnSetLow');
+    const btnNormalize = document.getElementById('btnNormalize');
+
+    /* =========================================================================
+       PERRY EMOTE / ANIMATION STATE CONTROLLER
+       - The thinking cloud appears ONLY when the user is changing probabilities
+       - Otherwise, it always shows "Hello, I'm Perry the Platypus"
+       ========================================================================= */
+    function resetToIdleGreeting() {
+      state.perryState = 'idle';
+      thoughtBubble.style.display = 'flex';
+      thoughtBubble.classList.remove('is-thinking');
+      thoughtIcon.textContent = '👋';
+      thoughtText.textContent = "Hello, I'm Perry the Platypus";
+      perrySvg.classList.remove('perry-thinking', 'perry-calculating');
+      if (magnifyingGlass) magnifyingGlass.style.display = 'none';
+      perrySpeech.textContent = '"Hello, I\'m Perry the Platypus!"';
+    }
+
+    function triggerThinkingEmote() {
+      // Show thinking cloud on Perry's head strictly while changing probabilities
+      thoughtBubble.style.display = 'flex';
+      thoughtBubble.classList.add('is-thinking');
+      thoughtIcon.textContent = '🤔';
+      thoughtText.textContent = 'Thinking...';
+      perrySvg.classList.add('perry-thinking');
+      perrySpeech.textContent = '"Perry is thinking as you adjust the probabilities..."';
+
+      clearTimeout(state.typingTimeout);
+      clearTimeout(state.idleTimeout);
+
+      // Re-evaluate perplexity live
+      state.typingTimeout = setTimeout(() => {
+        evaluatePerplexity();
+      }, 250);
+
+      // Once the user stops changing probabilities, return to "Hello, I'm Perry the Platypus"
+      state.idleTimeout = setTimeout(() => {
+        resetToIdleGreeting();
+      }, 1200);
+    }
+
+    /* =========================================================================
+       TOKENIZATION & RANDOM PROBABILITY GENERATION
+       ========================================================================= */
+    function tokenizeSentence(text) {
+      // Split on whitespace and filter empty tokens
+      if (!text || text.trim() === '') return [];
+      const rawWords = text.trim().split(/\s+/);
+      return rawWords.map(w => w.trim()).filter(Boolean);
+    }
+
+    // Generate natural random probability: 0.05 to 0.95 rounded to 3 decimal places
+    function getRandomProbability() {
+      // Let's create realistic skewed probabilities: some high (common), some mid, some low
+      const rand = Math.random();
+      let val;
+      if (rand < 0.25) {
+        // low prob
+        val = 0.02 + Math.random() * 0.18;
+      } else if (rand < 0.70) {
+        // medium prob
+        val = 0.25 + Math.random() * 0.45;
+      } else {
+        // high prob
+        val = 0.70 + Math.random() * 0.26;
+      }
+      return parseFloat(val.toFixed(3));
+    }
+
+    function syncSentenceToTokens(retainExistingProbabilities = true) {
+      const text = sentenceInput.value;
+      const newTokens = tokenizeSentence(text);
+
+      const oldProbMap = new Map();
+      if (retainExistingProbabilities) {
+        state.tokens.forEach((t, i) => {
+          oldProbMap.set(i + '_' + t, state.probabilities[i]);
+        });
+      }
+
+      state.tokens = newTokens;
+      state.probabilities = newTokens.map((token, i) => {
+        const key = i + '_' + token;
+        if (retainExistingProbabilities && oldProbMap.has(key)) {
+          return oldProbMap.get(key);
+        }
+        return getRandomProbability();
+      });
+
+      renderWordCards();
+      evaluatePerplexity();
+    }
+
+    /* =========================================================================
+       RENDER WORD PROBABILITY CARDS
+       ========================================================================= */
+    function renderWordCards() {
+      wordCountBadge.textContent = `${state.tokens.length} Token${state.tokens.length === 1 ? '' : 's'}`;
+
+      if (state.tokens.length === 0) {
+        wordCardsContainer.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <p style="font-size: 1.1rem; font-weight:600; margin-bottom:8px;">No words entered yet!</p>
+            <p style="font-size: 0.9rem;">Type a sentence above or click one of the presets to begin calculating perplexity.</p>
+          </div>
+        `;
+        return;
+      }
+
+      wordCardsContainer.innerHTML = '';
+
+      state.tokens.forEach((token, index) => {
+        const prob = state.probabilities[index];
+        const card = document.createElement('div');
+        card.className = 'word-card';
+        card.dataset.index = index;
+
+        // Visual color bar based on probability
+        const hue = Math.round(prob * 140); // 0 = red (surprising), 140 = green (predictable)
+        const surprisal = (-Math.log(prob)).toFixed(2);
+
+        card.innerHTML = `
+          <div class="word-header">
+            <span class="word-tag">w_${index + 1}</span>
+            <div class="word-text" title="${escapeHtml(token)}">${escapeHtml(token)}</div>
+            <button class="quick-btn random-single-btn" data-index="${index}" title="Randomize this token's probability" style="flex:none; padding:3px 8px;">🎲</button>
+          </div>
+
+          <div class="prob-input-row">
+            <input type="number"
+                   class="prob-input-field"
+                   data-index="${index}"
+                   min="0.001"
+                   max="1.000"
+                   step="0.01"
+                   value="${prob.toFixed(3)}"
+                   title="Type custom probability between 0.001 and 1.0">
+
+            <div class="slider-container">
+              <input type="range"
+                     class="prob-slider"
+                     data-index="${index}"
+                     min="0.01"
+                     max="1.00"
+                     step="0.01"
+                     value="${prob.toFixed(2)}">
+            </div>
+          </div>
+
+          <div class="quick-prob-buttons">
+            <button class="quick-btn preset-val-btn" data-index="${index}" data-val="0.90">High (0.9)</button>
+            <button class="quick-btn preset-val-btn" data-index="${index}" data-val="0.50">Med (0.5)</button>
+            <button class="quick-btn preset-val-btn" data-index="${index}" data-val="0.10">Low (0.1)</button>
+            <button class="quick-btn preset-val-btn" data-index="${index}" data-val="0.02">Rare (0.02)</button>
+          </div>
+
+          <div class="word-meta">
+            <span>Surprisal: <strong>${surprisal} nats</strong></span>
+            <span>\(P: ${(prob * 100).toFixed(1)}%\)</span>
+          </div>
+        `;
+
+        wordCardsContainer.appendChild(card);
+      });
+
+      attachCardEventListeners();
+    }
+
+    function attachCardEventListeners() {
+      // Sliders
+      const sliders = wordCardsContainer.querySelectorAll('.prob-slider');
+      sliders.forEach(slider => {
+        slider.addEventListener('input', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const val = parseFloat(e.target.value);
+          updateTokenProbability(index, val, false);
+          triggerThinkingEmote();
+        });
+      });
+
+      // Number Inputs
+      const inputs = wordCardsContainer.querySelectorAll('.prob-input-field');
+      inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          setPerryState('thinking', '"Perry is watching you fine-tune the probability numbers!"');
+        });
+
+        input.addEventListener('input', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          let val = parseFloat(e.target.value);
+          if (isNaN(val)) return;
+          if (val <= 0) val = 0.001;
+          if (val > 1) val = 1.000;
+          updateTokenProbability(index, val, true);
+          triggerThinkingEmote();
+        });
+
+        input.addEventListener('blur', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          let val = parseFloat(e.target.value);
+          if (isNaN(val) || val <= 0) val = 0.01;
+          if (val > 1) val = 1.0;
+          updateTokenProbability(index, val, false);
+          renderWordCards();
+          evaluatePerplexity();
+        });
+      });
+
+      // Quick Value Buttons
+      const quickBtns = wordCardsContainer.querySelectorAll('.preset-val-btn');
+      quickBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(btn.dataset.index);
+          const val = parseFloat(btn.dataset.val);
+          updateTokenProbability(index, val, false);
+          renderWordCards();
+          evaluatePerplexity();
+        });
+      });
+
+      // Random single button
+      const randomBtns = wordCardsContainer.querySelectorAll('.random-single-btn');
+      randomBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(btn.dataset.index);
+          const val = getRandomProbability();
+          updateTokenProbability(index, val, false);
+          renderWordCards();
+          evaluatePerplexity();
+        });
+      });
+    }
+
+    function updateTokenProbability(index, value, fromTextfield = false) {
+      if (index >= 0 && index < state.probabilities.length) {
+        state.probabilities[index] = Math.max(0.0001, Math.min(1.0, value));
+
+        const card = wordCardsContainer.querySelector(`.word-card[data-index="${index}"]`);
+        if (card) {
+          const slider = card.querySelector('.prob-slider');
+          const input = card.querySelector('.prob-input-field');
+          const meta = card.querySelector('.word-meta');
+
+          if (!fromTextfield && input) {
+            input.value = state.probabilities[index].toFixed(3);
+          }
+          if (slider) {
+            slider.value = state.probabilities[index].toFixed(2);
+          }
+          if (meta) {
+            const surprisal = (-Math.log(state.probabilities[index])).toFixed(2);
+            meta.innerHTML = `<span>Surprisal: <strong>${surprisal} nats</strong></span><span>\(P: ${(state.probabilities[index] * 100).toFixed(1)}%\)</span>`;
+          }
+        }
+
+        evaluatePerplexity();
+      }
+    }
+
+    /* =========================================================================
+       PERPLEXITY MATHEMATICAL EVALUATION
+       ========================================================================= */
+    function evaluatePerplexity() {
+      const N = state.tokens.length;
+
+      if (N === 0) {
+        statPerplexity.textContent = '--';
+        statLoss.textContent = '--';
+        statJointProb.textContent = '--';
+        calcTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">Enter a sentence to generate calculations.</td></tr>`;
+        resetToIdleGreeting();
+        return;
+      }
+
+      // 1. Joint Probability: Product of P(w_i)
+      // Note: for numerical stability, we compute in log space!
+      let sumLnProb = 0;
+      let sumLog2Prob = 0;
+      let productProb = 1.0;
+      let underflow = false;
+
+      state.probabilities.forEach(p => {
+        const lnP = Math.log(p);
+        const log2P = Math.log2(p);
+        sumLnProb += lnP;
+        sumLog2Prob += log2P;
+
+        if (!underflow) {
+          productProb *= p;
+          if (productProb === 0 || !isFinite(productProb)) {
+            underflow = true;
+          }
+        }
+      });
+
+      // 2. Average Cross Entropy Loss (H): -1/N * sum(ln(P(w_i)))
+      const crossEntropyNats = - (sumLnProb / N);
+      const crossEntropyBits = - (sumLog2Prob / N);
+
+      // 3. Perplexity: exp(crossEntropyNats)
+      const perplexity = Math.exp(crossEntropyNats);
+
+      // Update Top Stat Cards
+      statPerplexity.textContent = perplexity > 9999 ? perplexity.toExponential(2) : perplexity.toFixed(2);
+      statLoss.textContent = `${crossEntropyNats.toFixed(3)} nats`;
+
+      if (underflow || productProb < 1e-12) {
+        // Format scientific notation
+        statJointProb.textContent = Math.exp(sumLnProb).toExponential(3);
+      } else {
+        statJointProb.textContent = productProb.toFixed(5);
+      }
+
+      // Update Step-by-Step Table
+      renderCalculationTable();
+
+      // Update Interpretation & Perry Emote Response
+      interpretPerplexity(perplexity, N);
+    }
+
+    function renderCalculationTable() {
+      calcTableBody.innerHTML = '';
+
+      state.tokens.forEach((token, i) => {
+        const prob = state.probabilities[i];
+        const nats = -Math.log(prob);
+        const bits = -Math.log2(prob);
+
+        let badgeClass = '';
+        let badgeText = '';
+
+        if (prob >= 0.70) {
+          badgeText = 'Very Expected';
+          badgeClass = 'color: #059669; font-weight: 700;';
+        } else if (prob >= 0.40) {
+          badgeText = 'Moderate';
+          badgeClass = 'color: #0284C7; font-weight: 600;';
+        } else if (prob >= 0.15) {
+          badgeText = 'Surprising';
+          badgeClass = 'color: #D97706; font-weight: 600;';
+        } else {
+          badgeText = 'High Shock!';
+          badgeClass = 'color: #DC2626; font-weight: 700;';
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="color:var(--text-muted);">${i + 1}</td>
+          <td><strong>${escapeHtml(token)}</strong></td>
+          <td>${prob.toFixed(3)}</td>
+          <td>${nats.toFixed(3)} nats</td>
+          <td>${bits.toFixed(3)} bits</td>
+          <td><span style="${badgeClass}">● ${badgeText}</span></td>
+        `;
+        calcTableBody.appendChild(tr);
+      });
+    }
+
+    function interpretPerplexity(ppl, n) {
+      if (ppl < 2.0) {
+        interpIcon.textContent = '🕵️‍♂️';
+        interpTitle.textContent = 'Extremely Predictable (Agent P Approved!)';
+        interpText.textContent = `PPL = ${ppl.toFixed(2)}. At each token, the model acts as though it is choosing between approximately ${Math.max(1, Math.round(ppl))} equally probable word. The model is extraordinarily confident!`;
+      } else if (ppl < 6.0) {
+        interpIcon.textContent = '💡';
+        interpTitle.textContent = 'Moderate Natural Language Perplexity';
+        interpText.textContent = `PPL = ${ppl.toFixed(2)}. This represents typical fluency in common natural sentences. The model considers roughly ~${Math.round(ppl)} plausible alternative choices on average per word.`;
+      } else if (ppl < 25.0) {
+        interpIcon.textContent = '⚡';
+        interpTitle.textContent = 'High Surprise / Novel Vocabulary';
+        interpText.textContent = `PPL = ${ppl.toFixed(2)}. Several words had low assigned probabilities. The language model feels high uncertainty at each position (branching factor of ~${Math.round(ppl)}).`;
+      } else {
+        interpIcon.textContent = '😵‍💫';
+        interpTitle.textContent = 'Massive Bewilderment (Extreme Perplexity!)';
+        interpText.textContent = `PPL = ${ppl > 9999 ? ppl.toExponential(2) : ppl.toFixed(1)}. The model was severely shocked by this sequence of tokens. This happens with rare tokens, misspellings, or highly improbable probability assignments.`;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        switch (m) {
+          case '&': return '&amp;';
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '"': return '&quot;';
+          case "'": return '&#039;';
+          default: return m;
+        }
+      });
+    }
+
+    /* =========================================================================
+       GLOBAL CONTROLS & TOOLBAR EVENT LISTENERS
+       ========================================================================= */
+
+    // Sentence input typing triggers token updates & thinking emote
+    sentenceInput.addEventListener('input', () => {
+      triggerThinkingEmote();
+      syncSentenceToTokens(true);
+    });
+
+    // Preset sentence pills
+    document.querySelectorAll('.preset-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        sentenceInput.value = pill.dataset.text;
+        triggerThinkingEmote();
+        syncSentenceToTokens(false);
+      });
+    });
+
+    // Randomize all probabilities
+    btnRandomizeAll.addEventListener('click', () => {
+      state.probabilities = state.tokens.map(() => getRandomProbability());
+      renderWordCards();
+      triggerThinkingEmote();
+    });
+
+    // Preset High
+    btnSetHigh.addEventListener('click', () => {
+      state.probabilities = state.tokens.map(() => 0.85);
+      renderWordCards();
+      triggerThinkingEmote();
+    });
+
+    // Preset Medium
+    btnSetMedium.addEventListener('click', () => {
+      state.probabilities = state.tokens.map(() => 0.50);
+      renderWordCards();
+      triggerThinkingEmote();
+    });
+
+    // Preset Low
+    btnSetLow.addEventListener('click', () => {
+      state.probabilities = state.tokens.map(() => 0.15);
+      renderWordCards();
+      triggerThinkingEmote();
+    });
+
+    // Normalize / Smooth curve
+    btnNormalize.addEventListener('click', () => {
+      const total = state.probabilities.reduce((acc, v) => acc + v, 0);
+      if (total > 0) {
+        state.probabilities = state.probabilities.map(p => {
+          const smoothed = 0.2 + (p / total) * 0.7;
+          return parseFloat(Math.min(0.99, smoothed).toFixed(3));
+        });
+        renderWordCards();
+        triggerThinkingEmote();
+      }
+    });
+
+    // Tip Fedora button
+    btnTipFedora.addEventListener('click', () => {
+      perrySpeech.textContent = '"*Perry tips his brown fedora coolly at you.*"';
+      perrySvg.classList.add('perry-thinking');
+      clearTimeout(state.idleTimeout);
+      state.idleTimeout = setTimeout(() => {
+        resetToIdleGreeting();
+      }, 1500);
+    });
+
+    // Agent P Action button
+    btnAgentPAction.addEventListener('click', () => {
+      triggerThinkingEmote();
+    });
+
+    // Click on Perry SVG
+    perrySvg.addEventListener('click', () => {
+      perrySpeech.textContent = '"*Perry tips his brown fedora coolly at you.*"';
+      perrySvg.classList.add('perry-thinking');
+      clearTimeout(state.idleTimeout);
+      state.idleTimeout = setTimeout(() => {
+        resetToIdleGreeting();
+      }, 1500);
+    });
+
+    // Initialize application on load
+    window.addEventListener('DOMContentLoaded', () => {
+      syncSentenceToTokens(false);
+      resetToIdleGreeting();
+    });
+  </script>
+</body>
+</html>
